@@ -1,6 +1,8 @@
 import requests
 import json
 from enum import Enum
+import re
+from urllib.parse import unquote, quote
 
 #use regex expressions to clean up the market_name for the MarketplaceItem: Gun: .... Skin .... Quality .... Stattrak T/F
 
@@ -48,6 +50,9 @@ def get_item_info(app_id: str,market_name: str, currency : str):
         marketplace_items[market_name] = MarketPlaceItem(market_name,data["lowest_price"],data["volume"],data["median_price"])
         
         if 'success' in data and data['success']:
+            x = unquote(market_name)
+            print(x)
+            print(quote(x))
             marketplace_items[market_name].print_self()
             
         else:
