@@ -4,6 +4,10 @@ from enum import Enum
 import re
 from urllib.parse import unquote, quote
 
+import pandas as pd
+
+
+
 #use regex expressions to clean up the market_name for the MarketplaceItem: Gun: .... Skin .... Quality .... Stattrak T/F
 
 # Goal for this project
@@ -13,6 +17,9 @@ from urllib.parse import unquote, quote
 # - draw a graph of my asset value
 #
 
+#
+# - Fix Excel formatting issues maybe use something else instead of pandas
+#
 
 marketplace_items = {}
 
@@ -23,6 +30,8 @@ class AppID(Enum):
 class MarketName(Enum):
     FT_AK_REDLINE = "AK-47%20%7C%20Redline%20%28Field-Tested%29"
     ST_FT_AK_REDLINE = "StatTrak™%20AK-47%20%7C%20Redline%20%28Field-Tested%29"
+    AK_HEADSHOT = "AK-47%20%7C%20Head%20Shot%20%28Field-Tested%29"
+    AK_LEETMUSEO = "AK-47%20%7C%20Leet%20Museo%20%28Factory%20New%29"
 
 class MarketPlaceItem:
     def __init__(self,name = str, lowest_price = str, volume = str, median_price = str, wear = str, statTrak = bool):
@@ -71,10 +80,26 @@ def get_item_info(app_id: str,market_name: str, currency : str):
     
     else:
         print(f"HTTP Error {response.status_code}")
-
-get_item_info(AppID.csgo.value,MarketName.ST_FT_AK_REDLINE.value,Currency.CAD.value)
-get_item_info(AppID.csgo.value,MarketName.FT_AK_REDLINE.value,Currency.CAD.value)
+        
 
 
-for key, value in marketplace_items.items():
-    value.print_self()
+
+def write_to_excel():
+    # Create a sample DataFrame
+    data = [
+    ]
+    for key, value in marketplace_items.items():
+        data.append([f"{key}",f"{value.lowest_price}",f"{value.wear}"])
+    df = pd.DataFrame(data)
+
+    # Write the DataFrame to Excel
+    df.to_excel('output.xlsx', index=False, engine='openpyxl')
+
+
+if __name__ == '__main__':
+    get_item_info(AppID.csgo.value, MarketName.ST_FT_AK_REDLINE.value, Currency.CAD.value)
+    get_item_info(AppID.csgo.value, MarketName.FT_AK_REDLINE.value, Currency.CAD.value)
+    get_item_info(AppID.csgo.value, MarketName.AK_HEADSHOT.value, Currency.CAD.value)
+    get_item_info(AppID.csgo.value, MarketName.AK_LEETMUSEO.value, Currency.CAD.value)
+    
+    write_to_excel()
